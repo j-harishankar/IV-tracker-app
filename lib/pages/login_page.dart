@@ -7,6 +7,8 @@ import '../components/my_textfield.dart';
 import '../components/square_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+bool isPressed = false;
+
 class LoginPage extends StatefulWidget {
   final String role;
 
@@ -175,14 +177,32 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: 25,
                     ),
                     const SizedBox(height: 25),
-                    MyButton(
-                      onTap: () => signUserIn(context),
-                      text: 'Sign In',
-                      backgroundColor: Colors.white.withOpacity(0.3),
-                      textColor: Colors.white, // White text
-                      borderRadius: 25,
-                      shadowColor: Colors.black.withOpacity(0.2),
-                    ),
+                   // Add this inside your _LoginPageState class
+
+                  MyButton(
+                  onTap: () async {
+            setState(() {
+            isPressed = true;
+            });
+
+            await Future.delayed(Duration(milliseconds: 150)); // Short animation delay
+
+            await signUserIn(context);
+
+            setState(() {
+            isPressed = false;
+            });
+            },
+              text: 'Sign In',
+              backgroundColor: isPressed
+                  ? Colors.white.withOpacity(0.1) // Lighter shade when pressed
+                  : Colors.white.withOpacity(0.3), // Normal state
+              textColor: Colors.white,
+              borderRadius: 25,
+              shadowColor: isPressed
+                  ? Colors.transparent // Remove shadow when pressed
+                  : Colors.black.withOpacity(0.2), // Normal shadow
+            ),
 
                     const SizedBox(height: 40),
 

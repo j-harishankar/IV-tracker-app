@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:projects/pages/profile_page.dart';
 import '../backend.dart'; // Import the backend file
+import '../pages/teacher_group_page.dart'; // Import Teacher Group Page
+import '../pages/student_group_page.dart';
 
 class IVTrackingHome extends StatefulWidget {
   @override
@@ -100,14 +103,23 @@ class _IVTrackingHomeState extends State<IVTrackingHome> {
                   leading: Icon(Icons.group, color: Colors.blue),
                   title: Text('Groups'),
                   onTap: () {
-                    Navigator.pop(context);
+                    if (userRole == 'teacher') {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => GroupPage()));
+                    } else {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => StudentPage()));
+                    }
                   },
                 ),
                 ListTile(
                   leading: Icon(Icons.person, color: Colors.blue),
                   title: Text('Profile'),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfilePage(),
+                      ),
+                    );
                   },
                 ),
                 if (userRole ==
@@ -302,7 +314,7 @@ class _IVTrackingHomeState extends State<IVTrackingHome> {
                                 geofenceCircles = {
                                   Circle(
                                     circleId:
-                                        CircleId(selectedLocation.toString()),
+                                    CircleId(selectedLocation.toString()),
                                     center: selectedLocation!,
                                     radius: geofenceRadius,
                                     fillColor: Colors.blue.withOpacity(0.5),

@@ -80,7 +80,7 @@ flutter:
     - assets/animations/register_page.json
     - assets/animations/app_guide.json
     - lib/images/profile.png
-    - lib/images/profile2.png
+    - assets/animations/profile2.jpg
     - assets/animations/location_tracking1.json
     - assets/animations/gradient.jpg
     - assets/animations/profile.jpg
@@ -91,6 +91,7 @@ flutter:
     - assets/animations/gradient5.jpg
     - assets/animations/gradient6.jpg
     - assets/animations/gradient7.jpg
+    - assets/animations/gradient8.jpg
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
