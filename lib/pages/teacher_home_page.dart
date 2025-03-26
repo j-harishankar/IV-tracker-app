@@ -39,7 +39,6 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
           // Profile Section
           Stack(
             children: [
-
               Container(
                 height: 250,
                 width: double.infinity,
@@ -48,7 +47,6 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                     image: AssetImage('assets/animations/gradient2.jpg'),
                     fit: BoxFit.cover,
                   ),
-
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -63,9 +61,9 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      'Teacher',
-                      style: TextStyle(
+                    Text(
+                      _auth.currentUser?.displayName ?? 'Teacher',
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.white, // Accent dark gray
@@ -145,8 +143,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
           backgroundColor: Colors.black, // White
           color: Colors.white, // Dark gray icons
           activeColor: Colors.black,
-          tabBackgroundColor:
-              Colors.grey, // Warm gray for selected tab
+          tabBackgroundColor: Colors.grey, // Warm gray for selected tab
           gap: 8,
           tabs: [
             GButton(
@@ -283,7 +280,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       final group = snapshot.data!.docs[index].data()
-                          as Map<String, dynamic>;
+                      as Map<String, dynamic>;
                       return _buildGroupCard({
                         'name': group['name'] ?? '',
                         'description': group['description'] ?? '',
@@ -391,6 +388,8 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
         'name': _groupNameController.text.trim(),
         'description': _groupDescController.text.trim(),
         'teacherId': user.uid,
+        'teacherName': user.displayName ?? 'Unknown', // Store username
+        'teacherEmail': user.email ?? 'Unknown', // Store email
         'createdAt': FieldValue.serverTimestamp(),
         'groupId': groupId,
       });

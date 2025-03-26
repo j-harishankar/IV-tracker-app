@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,13 +26,30 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance; // Define _auth
+  final FirebaseFirestore _firestore =
+      FirebaseFirestore.instance; // Firestore instance
   List<String> students = ['Student 1', 'Student 2', 'Student 3', 'Student 4'];
   List<String> alerts = [];
   TextEditingController alertController = TextEditingController();
   File? _image;
+  String displayName = 'Teacher';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDisplayName();
+  }
+
+  void _fetchDisplayName() {
+    setState(() {
+      displayName = _auth.currentUser?.displayName ?? 'Teacher';
+    });
+  }
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+    await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -49,20 +68,37 @@ class _GroupPageState extends State<GroupPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           backgroundColor: Colors.black87,
           title: Text('Send Alert', style: TextStyle(color: Colors.white)),
           content: TextField(
             controller: alertController,
-            decoration: InputDecoration(hintText: 'Type your message here...', hintStyle: TextStyle(color: Colors.white54)),
+            decoration: InputDecoration(
+                hintText: 'Type your message here...',
+                hintStyle: TextStyle(color: Colors.white54)),
             style: TextStyle(color: Colors.white),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel', style: TextStyle(color: Colors.white))),
             TextButton(
-              onPressed: () {
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel', style: TextStyle(color: Colors.white))),
+            TextButton(
+              onPressed: () async {
+                String message = alertController.text;
+                String email = _auth.currentUser?.email ?? 'Unknown';
+                String username = _auth.currentUser?.displayName ?? 'Unknown';
+                Timestamp timestamp = Timestamp.now();
+
+                // Store alert in Firestore
+                await _firestore.collection('alerts').add({
+                  'message': message,
+                  'email': email,
+                  'username': username,
+                  'timestamp': timestamp,
+                });
+
                 setState(() {
-                  alerts.add(alertController.text);
                   alertController.clear();
                 });
                 Navigator.pop(context);
@@ -80,18 +116,46 @@ class _GroupPageState extends State<GroupPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           backgroundColor: Colors.black87,
           title: Text('Previous Alerts', style: TextStyle(color: Colors.white)),
           content: Container(
             width: double.maxFinite,
-            child: ListView(
-              shrinkWrap: true,
-              children: alerts.map((alert) => ListTile(title: Text(alert, style: TextStyle(color: Colors.white)))).toList(),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _firestore
+                  .collection('alerts')
+                  .orderBy('timestamp', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Text('No alerts found.',
+                      style: TextStyle(color: Colors.white));
+                }
+                return ListView(
+                  shrinkWrap: true,
+                  children: snapshot.data!.docs.map((doc) {
+                    Map<String, dynamic> data =
+                    doc.data() as Map<String, dynamic>;
+                    return ListTile(
+                      title: Text(data['message'] ?? '',
+                          style: TextStyle(color: Colors.white)),
+                      subtitle: Text(
+                          '${data['username'] ?? 'Unknown'} (${data['email'] ?? 'Unknown'}) - ${data['timestamp'].toDate()}',
+                          style: TextStyle(color: Colors.white70)),
+                    );
+                  }).toList(),
+                );
+              },
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text('Close', style: TextStyle(color: Colors.white))),
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Close', style: TextStyle(color: Colors.white))),
           ],
         );
       },
@@ -110,8 +174,13 @@ class _GroupPageState extends State<GroupPage> {
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.7),
-              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40), bottomRight: Radius.circular(40)),
-              boxShadow: [BoxShadow(color: Colors.black38, blurRadius: 10, spreadRadius: 3)],
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(40),
+                  bottomRight: Radius.circular(40)),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black38, blurRadius: 10, spreadRadius: 3)
+              ],
             ),
             child: Column(
               children: [
@@ -122,12 +191,18 @@ class _GroupPageState extends State<GroupPage> {
                     backgroundColor: Colors.white,
                     backgroundImage: _image != null
                         ? FileImage(_image!)
-                        : AssetImage("assets/animations/profile.jpg") as ImageProvider,
+                        : AssetImage("assets/animations/profile.jpg")
+                    as ImageProvider,
                   ),
                 ),
                 SizedBox(height: 10),
-                Text('Teacher Name', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-                Text('Group Name', style: TextStyle(fontSize: 14, color: Colors.white70)),
+                Text(displayName,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+                Text('Group Name',
+                    style: TextStyle(fontSize: 14, color: Colors.white70)),
               ],
             ),
           ),
@@ -140,13 +215,22 @@ class _GroupPageState extends State<GroupPage> {
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  image: DecorationImage(image: AssetImage("assets/animations/gradient6.jpg"), fit: BoxFit.cover),
-                  boxShadow: [BoxShadow(color: Colors.black54, blurRadius: 10, spreadRadius: 3)],
+                  image: DecorationImage(
+                      image: AssetImage("assets/animations/gradient6.jpg"),
+                      fit: BoxFit.cover),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black54, blurRadius: 10, spreadRadius: 3)
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Group Members', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                    Text('Group Members',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
                     SizedBox(height: 10),
                     Expanded(
                       child: ListView.builder(
@@ -163,9 +247,11 @@ class _GroupPageState extends State<GroupPage> {
                                 backgroundColor: Colors.white24,
                                 child: Icon(Icons.person, color: Colors.white),
                               ),
-                              title: Text(students[index], style: TextStyle(color: Colors.white)),
+                              title: Text(students[index],
+                                  style: TextStyle(color: Colors.white)),
                               trailing: IconButton(
-                                icon: Icon(Icons.remove_circle, color: Colors.redAccent),
+                                icon: Icon(Icons.remove_circle,
+                                    color: Colors.redAccent),
                                 onPressed: () => removeStudent(index),
                               ),
                             ),
@@ -187,7 +273,9 @@ class _GroupPageState extends State<GroupPage> {
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.4),
           borderRadius: BorderRadius.circular(30),
-          boxShadow: [BoxShadow(color: Colors.black54, blurRadius: 10, spreadRadius: 3)],
+          boxShadow: [
+            BoxShadow(color: Colors.black54, blurRadius: 10, spreadRadius: 3)
+          ],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(30),
@@ -207,7 +295,8 @@ class _GroupPageState extends State<GroupPage> {
                   TextButton.icon(
                     onPressed: showMessages,
                     icon: Icon(Icons.message, color: Colors.white),
-                    label: Text("Messages", style: TextStyle(color: Colors.white)),
+                    label:
+                    Text("Messages", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),

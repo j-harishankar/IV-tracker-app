@@ -27,8 +27,9 @@ class Backend {
       final geofenceData = {
         'center': {'lat': center.latitude, 'lng': center.longitude},
         'radius': radius,
-        'groupId': groupId, // Store the group ID
-        'createdBy': FirebaseAuth.instance.currentUser?.uid, // Store teacher ID
+        'groupId': groupId, // Store the corresponding group ID
+        'createdBy':
+        FirebaseAuth.instance.currentUser?.email, // Store teacher email
       };
       await FirebaseFirestore.instance
           .collection('geofences')
@@ -51,6 +52,40 @@ class Backend {
     } catch (e) {
       print('Error fetching geofences for group: $e');
       return [];
+    }
+  }
+
+  static Future<void> deleteOldGeofenceFromFirebase(String groupId) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference geofenceCollection = firestore.collection('geofences');
+
+    // Query for geofences associated with the groupId
+    QuerySnapshot existingGeofences =
+    await geofenceCollection.where('groupId', isEqualTo: groupId).get();
+
+    // Delete all matching geofences
+    for (var doc in existingGeofences.docs) {
+      await doc.reference.delete();
+    }
+
+    print("Old geofences for groupId $groupId deleted successfully!");
+  }
+
+  // Fetch the group name from Firebase
+  static Future<String?> getGroupName(String groupId) async {
+    try {
+      DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+          .collection('groups')
+          .doc(groupId)
+          .get();
+
+      if (groupDoc.exists) {
+        return groupDoc['name']; // Assuming 'groupName' is the field name
+      }
+      return null;
+    } catch (e) {
+      print("Error fetching group name: $e");
+      return null;
     }
   }
 }

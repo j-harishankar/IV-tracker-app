@@ -36,12 +36,10 @@ class _StudentHomePageState extends State<StudentHomePage> {
                 height: 250,
                 width: double.infinity,
                 decoration: const BoxDecoration(
-
                   image: DecorationImage(
                     image: AssetImage('assets/animations/gradient4.jpg'),
                     fit: BoxFit.cover,
                   ),
-
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -56,9 +54,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      'Student',
-                      style: TextStyle(
+                    Text(
+                      _auth.currentUser?.displayName ?? 'Student',
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFFF9F9F9), // Lightest shade for contrast
@@ -283,14 +281,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
                       return FutureBuilder<DocumentSnapshot>(
                         future:
-                            _firestore.collection('groups').doc(groupId).get(),
+                        _firestore.collection('groups').doc(groupId).get(),
                         builder: (context, groupSnapshot) {
                           if (!groupSnapshot.hasData) {
                             return const SizedBox();
                           }
 
                           final groupData = groupSnapshot.data!.data()
-                                  as Map<String, dynamic>? ??
+                          as Map<String, dynamic>? ??
                               {
                                 'name': 'Deleted Group',
                                 'description': 'This group no longer exists'
@@ -300,8 +298,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
                             'name': groupData['name']?.toString() ??
                                 'Unnamed Group',
                             'description':
-                                groupData['description']?.toString() ??
-                                    'No description',
+                            groupData['description']?.toString() ??
+                                'No description',
                           });
                         },
                       );
@@ -390,7 +388,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
   Future<void> _joinGroup(String groupId) async {
     try {
       // Check if group exists
-      final groupDoc = await _firestore.collection('groups').doc(groupId).get();
+      final DocumentSnapshot groupDoc =
+      await _firestore.collection('groups').doc(groupId).get();
 
       if (!groupDoc.exists) {
         throw 'Group not found';
@@ -410,10 +409,18 @@ class _StudentHomePageState extends State<StudentHomePage> {
         throw 'You are already a member of this group';
       }
 
+      // Fetch creator's email
+      final createdBy =
+      groupDoc.exists ? groupDoc['teacherEmail'] : 'Unknown Creator';
+
       // Join the group
       await _firestore.collection('group_members').add({
         'groupId': groupId,
         'userId': userId,
+        'username': _auth.currentUser?.displayName ?? 'Unknown User',
+        'email': _auth.currentUser?.email ?? 'Unknown Email',
+        'createdBy':
+        createdBy, // Now it correctly fetches the email of the teacher
         'joinedAt': FieldValue.serverTimestamp(),
       });
 

@@ -92,6 +92,9 @@ flutter:
     - assets/animations/gradient6.jpg
     - assets/animations/gradient7.jpg
     - assets/animations/gradient8.jpg
+    - assets/animations/gradient9.jpg
+    - assets/animations/gradient10.jpg
+    - assets/animations/nn.json
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

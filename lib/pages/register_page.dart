@@ -105,6 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
           .collection('users')
           .doc(userCredential.user!.uid)
           .set({
+        'uid': FirebaseAuth.instance.currentUser?.uid, // ✅ Add this line
         'username': usernameController.text.trim(),
         'email': emailController.text.trim(),
         'role': selectedRole,
