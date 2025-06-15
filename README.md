@@ -10,7 +10,7 @@ Campus Compass is a cross-platform application developed using the Flutter frame
 - [Installation & Setup](#installation--setup)
 - [Usage](#usage)
 - [Contributing](#contributing)
-- [License](#license)
+
 
 ---
 
