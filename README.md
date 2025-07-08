@@ -2,6 +2,16 @@
 
 Campus Compass is a cross-platform application developed using the Flutter framework, designed to enhance campus management and communication for both teachers and students. The application integrates Firebase for authentication and real-time database functionality, providing a robust and scalable solution for collaborative group management.
 
+## 🖼️ Screenshots
+
+| ![Screenshot 1](https://media.licdn.com/dms/image/v2/D5622AQF_cOi1IuYJ2g/feedshare-shrink_2048_1536/B56ZdyT_9GG0Ao-/0/1749969536695?e=1755129600&v=beta&t=xpQyjPl2xhy_dUXbaue7UTQAEhRujWjFnGM5CPq96EM) | ![Screenshot 2](https://media.licdn.com/dms/image/v2/D5622AQGlsVfK-PleLA/feedshare-shrink_2048_1536/B56ZdyT_8aHoA0-/0/1749969536846?e=1755129600&v=beta&t=0SxL3_p5JMw79gQEWFVYX4z7p7ThPknRKKActB7b_0Q) |
+| --- | --- |
+| ![Screenshot 3](https://media.licdn.com/dms/image/v2/D5622AQFGhFMKPAZjzQ/feedshare-shrink_2048_1536/B56ZdyT_8cH8Ao-/0/1749969536356?e=1755129600&v=beta&t=oh6_q3aEl7b0R1OMXqo6OV6q9fWTdB4YiuOzbujlTQw) | ![Screenshot 4](https://media.licdn.com/dms/image/v2/D5622AQFxAc4Xb8B0ew/feedshare-shrink_2048_1536/B56ZdyT_9BGoAs-/0/1749969537321?e=1755129600&v=beta&t=9ej4D4FPHOKB0-6hoMv4670I_7jYrZcGeZo1pAnEW4M) |
+| ![Screenshot 5](https://media.licdn.com/dms/image/v2/D5622AQGu4YX7LXrOGw/feedshare-shrink_2048_1536/B56ZdyT_89GoAw-/0/1749969536564?e=1755129600&v=beta&t=_0FRESXosr2xDxyd8Fm8-ZbqBcS5_SM-f5as34MMauw) | ![Screenshot 6](https://media.licdn.com/dms/image/v2/D5622AQFEF82zOi5IiQ/feedshare-shrink_2048_1536/B56ZdyT_89HUAs-/0/1749969536370?e=1755129600&v=beta&t=KK96Jfk5J8myZCHaNbMc56w2v3XTrFVYCczkw-VVBj8) |
+| ![Screenshot 7](https://media.licdn.com/dms/image/v2/D5622AQGqJEyaEOEGGA/feedshare-shrink_2048_1536/B56ZdyT_9cH8Aw-/0/1749969536806?e=1755129600&v=beta&t=dMF8ak47oZ9zBtAUKUFi95CQaJoRUCwzgfrD6Y9lCVI) | ![Screenshot 8](https://media.licdn.com/dms/image/v2/D5622AQFZWKCpJoZ9fA/feedshare-shrink_2048_1536/B56ZdyT_9TGQAs-/0/1749969536413?e=1755129600&v=beta&t=DHy8edYBg3GoLmhJSnVvUg95KThVbm2nCrn5lPR_syk) |
+
+---
+
 ## Table of Contents
 
 - [Features](#features)
